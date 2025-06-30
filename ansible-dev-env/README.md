@@ -30,17 +30,24 @@ ansible-dev-env/
 │   ├── common/          # Ferramentas comuns de desenvolvimento
 │   ├── python/          # Ambiente Python
 │   ├── nodejs/          # Ambiente Node.js
-│   └── docker/          # Docker e Docker Compose
+│   ├── golang/          # Ambiente Go
+│   ├── docker/          # Docker e Docker Compose
+│   └── zsh/             # Zsh e Oh My Zsh
 └── README.md            # Este arquivo
 ```
 
 ## O que será instalado
 
 ### Role Common
-- Git
-- Curl, Wget
-- Vim
-- Build-essential (compiladores C/C++)
+- Git, Curl, Wget, Vim
+- Tmux (multiplexador de terminal)
+- Tree (visualizador de estrutura de diretórios)
+- Stow (gerenciador de links simbólicos)
+- Build-essential, Make, Autoconf, Automake
+- Terraform (infraestrutura como código)
+- Lazygit (interface TUI para Git)
+- Ferramentas de rede: net-tools, ping, traceroute, dig, netcat, nmap, tcpdump, iftop
+- Htop (monitor de processos)
 - Ferramentas de sistema essenciais
 
 ### Role Python
@@ -54,11 +61,23 @@ ansible-dev-env/
 - Node.js 22.x (instalado via NVM)
 - npm (incluído com Node.js)
 
+### Role Golang
+- Go 1.24
+- Configuração de GOPATH
+- Variáveis de ambiente configuradas em /etc/profile.d/golang.sh
+
 ### Role Docker
 - Docker CE
 - Docker CLI
 - Docker Compose
 - Configuração do usuário no grupo docker
+
+### Role Zsh
+- Zsh como shell padrão
+- Configurações básicas: histórico, autocompletar, cores
+- Prompt colorido e funcional
+- Aliases customizados para produtividade
+- Integração com variáveis de ambiente em /etc/profile.d/
 
 ## Como usar
 

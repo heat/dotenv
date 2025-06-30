@@ -1,0 +1,92 @@
+---
+- name: Install Zsh
+  apt:
+    name:
+      - zsh
+    state: present
+    update_cache: yes
+  become: yes
+
+- name: Check current shell
+  shell: echo $SHELL
+  register: current_shell
+  changed_when: false
+
+- name: Change default shell to Zsh
+  user:
+    name: "{{ ansible_user_id }}"
+    shell: /usr/bin/zsh
+  become: yes
+  when: current_shell.stdout != "/usr/bin/zsh"
+
+- name: Create .zshrc if it doesn't exist
+  file:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    state: touch
+    mode: '0644'
+  changed_when: false
+
+- name: Configure basic Zsh settings
+  blockinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - Basic Zsh configuration"
+    block: |
+      # History configuration
+      HISTFILE=~/.zsh_history
+      HISTSIZE=10000
+      SAVEHIST=10000
+      setopt HIST_IGNORE_DUPS
+      setopt HIST_IGNORE_SPACE
+      setopt SHARE_HISTORY
+      
+      # Enable colors
+      autoload -U colors && colors
+      
+      # Basic prompt
+      PS1="%{$fg[green]%}%n@%m%{$reset_color%}:%{$fg[blue]%}%~%{$reset_color%}$ "
+      
+      # Enable completion
+      autoload -Uz compinit && compinit
+      
+      # Completion options
+      zstyle ':completion:*' menu select
+      zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+      
+      # Key bindings
+      bindkey -e  # Emacs key bindings
+      bindkey '^[[A' history-search-backward
+      bindkey '^[[B' history-search-forward
+
+- name: Add custom aliases
+  blockinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - Custom aliases"
+    block: |
+      # Custom aliases
+      alias ll='ls -alF'
+      alias la='ls -A'
+      alias l='ls -CF'
+      alias ..='cd ..'
+      alias ...='cd ../..'
+      alias ....='cd ../../..'
+      alias gs='git status'
+      alias ga='git add'
+      alias gc='git commit'
+      alias gp='git push'
+      alias gl='git log --oneline --graph --decorate'
+      alias docker-clean='docker system prune -af'
+      alias docker-stop-all='docker stop $(docker ps -aq)'
+
+- name: Source profile files in .zshrc
+  blockinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - Source profile files"
+    block: |
+      # Source profile.d files for environment variables
+      if [ -d /etc/profile.d ]; then
+        for i in /etc/profile.d/*.sh; do
+          if [ -r $i ]; then
+            . $i
+          fi
+        done
+      fi
