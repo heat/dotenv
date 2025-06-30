@@ -1,43 +1,14 @@
 ---
-- name: Update apt cache (Ubuntu/Debian)
-  apt:
-    update_cache: yes
-    cache_valid_time: 3600
+# Include OS-specific tasks
+- name: Include Debian/Ubuntu tasks
+  include_tasks: debian.yml
   when: ansible_os_family == "Debian"
 
-- name: Install common development packages
-  package:
-    name:
-      - git
-      - curl
-      - wget
-      - vim
-      - build-essential
-      - linux-headers-generic
-      - make
-      - software-properties-common
-      - apt-transport-https
-      - ca-certificates
-      - gnupg
-      - lsb-release
-      - tmux
-      - tree
-      - stow
-      - autoconf
-      - automake
-      # Network tools
-      - net-tools
-      - iputils-ping
-      - traceroute
-      - dnsutils
-      - netcat
-      - nmap
-      - tcpdump
-      - iftop
-      - htop
-    state: present
-  when: ansible_os_family == "Debian"
+- name: Include Arch Linux tasks
+  include_tasks: archlinux.yml
+  when: ansible_os_family == "Archlinux"
 
+# Common tasks for all distributions
 - name: Create development directories
   file:
     path: "{{ item }}"
@@ -48,21 +19,39 @@
     - ~/tools
     - ~/.config
 
-# Install Terraform
-- name: Add HashiCorp GPG key
-  apt_key:
-    url: https://apt.releases.hashicorp.com/gpg
-    state: present
-  when: ansible_os_family == "Debian"
+# Install Lazygit (common for all distributions)
+- name: Check if lazygit is installed
+  command: which lazygit
+  register: lazygit_check
+  failed_when: false
+  changed_when: false
 
-- name: Add HashiCorp repository
-  apt_repository:
-    repo: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
-    state: present
-  when: ansible_os_family == "Debian"
+- name: Get latest lazygit version
+  uri:
+    url: https://api.github.com/repos/jesseduffield/lazygit/releases/latest
+    return_content: yes
+  register: lazygit_latest
+  when: lazygit_check.rc != 0
 
-- name: Install Terraform
-  package:
-    name: terraform
-    state: present
-  when: ansible_os_family == "Debian"
+- name: Download lazygit binary
+  get_url:
+    url: "https://github.com/jesseduffield/lazygit/releases/download/{{ lazygit_latest.json.tag_name }}/lazygit_{{ lazygit_latest.json.tag_name[1:] }}_Linux_x86_64.tar.gz"
+    dest: /tmp/lazygit.tar.gz
+    mode: '0644'
+  when: lazygit_check.rc != 0
+
+- name: Extract lazygit
+  unarchive:
+    src: /tmp/lazygit.tar.gz
+    dest: /tmp
+    remote_src: yes
+  when: lazygit_check.rc != 0
+
+- name: Install lazygit
+  copy:
+    src: /tmp/lazygit
+    dest: /usr/local/bin/lazygit
+    mode: '0755'
+    remote_src: yes
+  become: yes
+  when: lazygit_check.rc != 0

@@ -1,0 +1,10 @@
+---
+# Debian/Ubuntu specific tasks for Zsh
+
+- name: Install Zsh
+  apt:
+    name:
+      - zsh
+    state: present
+    update_cache: yes
+  become: yes

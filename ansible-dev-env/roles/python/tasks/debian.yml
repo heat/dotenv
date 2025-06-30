@@ -1,0 +1,17 @@
+---
+# Debian/Ubuntu specific tasks for Python
+
+- name: Install Python and pip
+  package:
+    name:
+      - python3
+      - python3-pip
+      - python3-venv
+      - python3-dev
+    state: present
+
+- name: Set Python3 as default python
+  alternatives:
+    name: python
+    link: /usr/bin/python
+    path: /usr/bin/python3

@@ -1,0 +1,41 @@
+---
+# Arch Linux specific tasks
+
+- name: Update pacman cache
+  pacman:
+    update_cache: yes
+
+- name: Install common development packages
+  pacman:
+    name:
+      - git
+      - curl
+      - wget
+      - vim
+      - base-devel
+      - linux-headers
+      - make
+      - ca-certificates
+      - gnupg
+      - tmux
+      - tree
+      - stow
+      - autoconf
+      - automake
+      # Network tools
+      - net-tools
+      - iputils
+      - traceroute
+      - bind
+      - gnu-netcat
+      - nmap
+      - tcpdump
+      - iftop
+      - htop
+    state: present
+
+# Install Terraform
+- name: Install Terraform
+  pacman:
+    name: terraform
+    state: present

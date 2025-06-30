@@ -1,0 +1,12 @@
+---
+# Arch Linux specific tasks for Python
+
+- name: Install Python and pip
+  pacman:
+    name:
+      - python
+      - python-pip
+      - python-virtualenv
+    state: present
+
+# Note: In Arch Linux, python refers to Python 3 by default

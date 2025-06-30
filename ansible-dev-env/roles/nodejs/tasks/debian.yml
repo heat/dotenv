@@ -1,0 +1,10 @@
+---
+# Debian/Ubuntu specific tasks for Node.js
+
+- name: Install NVM dependencies
+  package:
+    name:
+      - curl
+      - build-essential
+      - libssl-dev
+    state: present

@@ -1,23 +1,30 @@
 ---
-- name: Install Zsh
-  apt:
-    name:
-      - zsh
-    state: present
-    update_cache: yes
-  become: yes
+# Include OS-specific tasks
+- name: Include Debian/Ubuntu tasks
+  include_tasks: debian.yml
+  when: ansible_os_family == "Debian"
 
+- name: Include Arch Linux tasks
+  include_tasks: archlinux.yml
+  when: ansible_os_family == "Archlinux"
+
+# Common tasks for all distributions
 - name: Check current shell
   shell: echo $SHELL
   register: current_shell
   changed_when: false
 
+- name: Get zsh path
+  command: which zsh
+  register: zsh_path
+  changed_when: false
+
 - name: Change default shell to Zsh
   user:
     name: "{{ ansible_user_id }}"
-    shell: /usr/bin/zsh
+    shell: "{{ zsh_path.stdout }}"
   become: yes
-  when: current_shell.stdout != "/usr/bin/zsh"
+  when: current_shell.stdout != zsh_path.stdout
 
 - name: Create .zshrc if it doesn't exist
   file:

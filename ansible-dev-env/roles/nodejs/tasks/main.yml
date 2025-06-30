@@ -1,12 +1,14 @@
 ---
-- name: Install NVM dependencies
-  package:
-    name:
-      - curl
-      - build-essential
-      - libssl-dev
-    state: present
+# Include OS-specific tasks
+- name: Include Debian/Ubuntu tasks
+  include_tasks: debian.yml
+  when: ansible_os_family == "Debian"
 
+- name: Include Arch Linux tasks
+  include_tasks: archlinux.yml
+  when: ansible_os_family == "Archlinux"
+
+# Common tasks for all distributions
 - name: Download NVM installation script
   get_url:
     url: https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh
@@ -29,6 +31,18 @@
     marker: "# {mark} ANSIBLE MANAGED BLOCK - NVM"
     create: yes
   become: no
+
+- name: Add NVM to zsh profile
+  blockinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    block: |
+      export NVM_DIR="$HOME/.nvm"
+      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+      [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - NVM"
+    create: yes
+  become: no
+  when: "'zsh' in ansible_facts.packages"
 
 - name: Install Node.js 22.x using NVM
   shell: |

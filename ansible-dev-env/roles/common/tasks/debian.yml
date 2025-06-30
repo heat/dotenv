@@ -1,0 +1,55 @@
+---
+# Debian/Ubuntu specific tasks
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install common development packages
+  package:
+    name:
+      - git
+      - curl
+      - wget
+      - vim
+      - build-essential
+      - linux-headers-generic
+      - make
+      - software-properties-common
+      - apt-transport-https
+      - ca-certificates
+      - gnupg
+      - lsb-release
+      - tmux
+      - tree
+      - stow
+      - autoconf
+      - automake
+      # Network tools
+      - net-tools
+      - iputils-ping
+      - traceroute
+      - dnsutils
+      - netcat
+      - nmap
+      - tcpdump
+      - iftop
+      - htop
+    state: present
+
+# Install Terraform
+- name: Add HashiCorp GPG key
+  apt_key:
+    url: https://apt.releases.hashicorp.com/gpg
+    state: present
+
+- name: Add HashiCorp repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
+    state: present
+
+- name: Install Terraform
+  package:
+    name: terraform
+    state: present
