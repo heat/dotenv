@@ -9,4 +9,5 @@
     - common
     - python
     - nodejs
+    - golang
     - docker

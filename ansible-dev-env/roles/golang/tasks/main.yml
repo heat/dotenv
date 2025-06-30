@@ -1,0 +1,75 @@
+---
+- name: Install dependencies for Go
+  apt:
+    name:
+      - wget
+      - tar
+    state: present
+    update_cache: yes
+
+- name: Check if Go is already installed
+  stat:
+    path: /usr/local/go/bin/go
+  register: go_installed
+
+- name: Check Go version
+  shell: /usr/local/go/bin/go version | grep -oP 'go\K[0-9.]+'
+  register: go_version
+  when: go_installed.stat.exists
+  changed_when: false
+  failed_when: false
+
+- name: Download Go 1.24
+  get_url:
+    url: "https://go.dev/dl/go1.24.linux-amd64.tar.gz"
+    dest: /tmp/go1.24.linux-amd64.tar.gz
+    mode: '0644'
+  when: not go_installed.stat.exists or (go_version.stdout is defined and go_version.stdout != '1.24')
+
+- name: Remove old Go installation
+  file:
+    path: /usr/local/go
+    state: absent
+  when: not go_installed.stat.exists or (go_version.stdout is defined and go_version.stdout != '1.24')
+
+- name: Extract Go archive
+  unarchive:
+    src: /tmp/go1.24.linux-amd64.tar.gz
+    dest: /usr/local
+    remote_src: yes
+    creates: /usr/local/go/bin/go
+  when: not go_installed.stat.exists or (go_version.stdout is defined and go_version.stdout != '1.24')
+
+- name: Set Go environment variables in /etc/profile.d/golang.sh
+  copy:
+    dest: /etc/profile.d/golang.sh
+    content: |
+      export PATH=$PATH:/usr/local/go/bin
+      export GOPATH=$HOME/go
+      export PATH=$PATH:$GOPATH/bin
+    mode: '0644'
+
+- name: Create Go workspace directory
+  file:
+    path: "{{ ansible_env.HOME }}/go"
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_env.USER }}"
+    group: "{{ ansible_env.USER }}"
+  become: yes
+  become_user: "{{ ansible_env.USER }}"
+
+- name: Verify Go installation
+  shell: /usr/local/go/bin/go version
+  register: go_version_output
+  changed_when: false
+
+- name: Display Go version
+  debug:
+    msg: "Go installed: {{ go_version_output.stdout }}"
+
+- name: Clean up downloaded archive
+  file:
+    path: /tmp/go1.24.linux-amd64.tar.gz
+    state: absent
+  when: not go_installed.stat.exists or (go_version.stdout is defined and go_version.stdout != '1.24')

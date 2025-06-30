@@ -13,6 +13,8 @@
       - wget
       - vim
       - build-essential
+      - linux-headers-generic
+      - make
       - software-properties-common
       - apt-transport-https
       - ca-certificates
