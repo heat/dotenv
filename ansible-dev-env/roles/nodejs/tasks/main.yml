@@ -1,0 +1,42 @@
+---
+- name: Install NVM dependencies
+  package:
+    name:
+      - curl
+      - build-essential
+      - libssl-dev
+    state: present
+
+- name: Download NVM installation script
+  get_url:
+    url: https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh
+    dest: /tmp/install-nvm.sh
+    mode: '0755'
+
+- name: Install NVM
+  shell: /tmp/install-nvm.sh
+  args:
+    creates: "{{ ansible_env.HOME }}/.nvm/nvm.sh"
+  become: no
+
+- name: Add NVM to shell profile
+  blockinfile:
+    path: "{{ ansible_env.HOME }}/.bashrc"
+    block: |
+      export NVM_DIR="$HOME/.nvm"
+      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+      [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - NVM"
+    create: yes
+  become: no
+
+- name: Install Node.js 22.x using NVM
+  shell: |
+    source {{ ansible_env.HOME }}/.nvm/nvm.sh
+    nvm install 22
+    nvm use 22
+    nvm alias default 22
+  args:
+    executable: /bin/bash
+    creates: "{{ ansible_env.HOME }}/.nvm/versions/node/v22*"
+  become: no

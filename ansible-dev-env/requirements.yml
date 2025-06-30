@@ -1,0 +1,6 @@
+---
+# Arquivo para dependências de roles externas (se necessário)
+# Exemplo:
+# roles:
+#   - name: geerlingguy.docker
+#     version: 4.1.0
