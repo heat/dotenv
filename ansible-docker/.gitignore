@@ -1,0 +1,4 @@
+# Ignore SSH private keys and other sensitive files
+.ssh/*
+# Do not ignore the .gitkeep file, so the directory structure is maintained
+!.ssh/.gitkeep
