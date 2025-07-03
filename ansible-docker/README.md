@@ -9,16 +9,16 @@ This directory contains a Dockerized environment for running Ansible, including 
 
 ## SSH Key Setup
 
-Before starting the container, you need to place your SSH keys in the `.ssh` directory inside this project (`ansible-docker/.ssh`). This allows Ansible inside the container to connect to your remote hosts.
+Before starting the container, you need to place your SSH keys in the `ssh` directory inside this project (`ansible-docker/ssh`). This allows Ansible inside the container to connect to your remote hosts.
 
-1.  **Create the `.ssh` directory if it doesn't exist:**
+1.  **Create the `ssh` directory if it doesn't exist:**
     ```bash
-    mkdir -p .ssh
+    mkdir -p ssh
     ```
 
 2.  **Copy your SSH keys:**
 
-    Copy your private key (`id_rsa`), public key (`id_rsa.pub`), and any SSH `config` file you might need into the `./.ssh` directory.
+    Copy your private key (`id_rsa`), public key (`id_rsa.pub`), and any SSH `config` file you might need into the `./ssh` directory.
 
     **Important:** This directory is ignored by Git (via `.gitignore`) to prevent your private keys from being accidentally committed.
 
@@ -59,4 +59,4 @@ Before starting the container, you need to place your SSH keys in the `.ssh` dir
 -   **docker-compose.yml**:
     -   Builds the `Dockerfile`.
     -   Mounts the `../ansible-dev-env` directory to `/project` in the container.
-    -   Mounts your local `~/.ssh` directory to `/root/.ssh` (read-only) to allow Ansible to connect to remote hosts using your existing SSH keys.
+    -   Mounts your local `ssh` directory to `/root/.ssh` (read-only) to allow Ansible to connect to remote hosts using your existing SSH keys.

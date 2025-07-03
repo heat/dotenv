@@ -9,5 +9,5 @@ services:
       - ../ansible-dev-env:/project
       # Mount ssh keys to be able to connect to hosts
       # Mount the local .ssh directory, where you should place your keys
-      - ./.ssh:/root/.ssh:ro
+      - ./ssh:/root/.ssh
     working_dir: /project
