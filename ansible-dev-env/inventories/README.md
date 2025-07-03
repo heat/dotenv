@@ -35,7 +35,12 @@ Inventário para Windows Subsystem for Linux (WSL).
    # Configurar para iniciar automaticamente
    sudo systemctl enable ssh
    ```
-
+   para o archlinux
+   ```bash
+   sudo pacman -S openssh
+   sudo systemctl enable sshd
+   sudo systemctl start sshd
+   ```
 3. **Editar o inventário:**
    - Abra o arquivo `inventories/wsl`
    - Substitua `your_wsl_user` pelo seu usuário WSL
