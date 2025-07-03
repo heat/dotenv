@@ -7,8 +7,8 @@
   
   roles:
     - common
+    - zsh
     - python
     - nodejs
     - golang
     - docker
-    - zsh

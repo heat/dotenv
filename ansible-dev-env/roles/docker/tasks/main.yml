@@ -1,44 +1,55 @@
 ---
-- name: Remove old Docker packages
-  package:
-    name:
-      - docker
-      - docker-engine
-      - docker.io
-      - containerd
-      - runc
-    state: absent
-  when: ansible_os_family == "Debian"
+- name: Check if Docker is installed and running
+  command: docker info
+  register: docker_info_result
+  changed_when: false
+  ignore_errors: true
 
-- name: Add Docker GPG key
-  apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
-    state: present
-  when: ansible_os_family == "Debian"
+- name: Display Docker status
+  debug:
+    msg: "Docker is already installed and running."
+  when: docker_info_result.rc == 0
 
-- name: Add Docker repository
-  apt_repository:
-    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
-    state: present
-  when: ansible_os_family == "Debian"
+- name: Block for Docker Installation
+  block:
+    - name: Remove old Docker packages
+      package:
+        name:
+          - docker
+          - docker-engine
+          - docker.io
+          - containerd
+          - runc
+        state: absent
 
-- name: Install Docker
-  package:
-    name:
-      - docker-ce
-      - docker-ce-cli
-      - containerd.io
-      - docker-compose-plugin
-    state: present
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
 
-- name: Add user to docker group
-  user:
-    name: "{{ ansible_user_id }}"
-    groups: docker
-    append: yes
+    - name: Add Docker repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
 
-- name: Start and enable Docker service
-  systemd:
-    name: docker
-    state: started
-    enabled: yes
+    - name: Install Docker
+      package:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose-plugin
+        state: present
+  when: docker_info_result.failed and ansible_os_family == "Debian"
+
+# - name: Add user to docker group
+#   user:
+#     name: "{{ ansible_user_id }}"
+#     groups: docker
+#     append: yes
+
+# - name: Start and enable Docker service
+#   systemd:
+#     name: docker
+#     state: started
+#     enabled: yes

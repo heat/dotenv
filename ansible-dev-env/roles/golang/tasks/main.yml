@@ -19,26 +19,26 @@
   changed_when: false
   failed_when: false
 
-- name: Download Go 1.24
+- name: Download Go 1.24.2
   get_url:
-    url: "https://go.dev/dl/go1.24.linux-amd64.tar.gz"
-    dest: /tmp/go1.24.linux-amd64.tar.gz
+    url: "https://go.dev/dl/go1.24.2.linux-amd64.tar.gz"
+    dest: /tmp/go1.24.2.linux-amd64.tar.gz
     mode: '0644'
-  when: not go_installed.stat.exists or (go_version.stdout is defined and go_version.stdout != '1.24')
+  when: not go_installed.stat.exists or (go_version.stdout is defined and go_version.stdout != '1.24.2')
 
 - name: Remove old Go installation
   file:
     path: /usr/local/go
     state: absent
-  when: not go_installed.stat.exists or (go_version.stdout is defined and go_version.stdout != '1.24')
+  when: not go_installed.stat.exists or (go_version.stdout is defined and go_version.stdout != '1.24.2')
 
 - name: Extract Go archive
   unarchive:
-    src: /tmp/go1.24.linux-amd64.tar.gz
+    src: /tmp/go1.24.2.linux-amd64.tar.gz
     dest: /usr/local
     remote_src: yes
     creates: /usr/local/go/bin/go
-  when: not go_installed.stat.exists or (go_version.stdout is defined and go_version.stdout != '1.24')
+  when: not go_installed.stat.exists or (go_version.stdout is defined and go_version.stdout != '1.24.2')
 
 - name: Set Go environment variables in /etc/profile.d/golang.sh
   copy:
@@ -54,10 +54,7 @@
     path: "{{ ansible_env.HOME }}/go"
     state: directory
     mode: '0755'
-    owner: "{{ ansible_env.USER }}"
-    group: "{{ ansible_env.USER }}"
-  become: yes
-  become_user: "{{ ansible_env.USER }}"
+  become: no
 
 - name: Verify Go installation
   shell: /usr/local/go/bin/go version
@@ -70,6 +67,6 @@
 
 - name: Clean up downloaded archive
   file:
-    path: /tmp/go1.24.linux-amd64.tar.gz
+    path: /tmp/go1.24.2.linux-amd64.tar.gz
     state: absent
-  when: not go_installed.stat.exists or (go_version.stdout is defined and go_version.stdout != '1.24')
+  when: not go_installed.stat.exists or (go_version.stdout is defined and go_version.stdout != '1.24.2')

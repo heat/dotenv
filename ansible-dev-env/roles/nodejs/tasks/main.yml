@@ -8,6 +8,10 @@
   include_tasks: archlinux.yml
   when: ansible_os_family == "Archlinux"
 
+- name: Gather package facts
+  package_facts:
+    manager: auto
+
 # Common tasks for all distributions
 - name: Download NVM installation script
   get_url:
