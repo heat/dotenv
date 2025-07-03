@@ -1,0 +1,13 @@
+services:
+  ansible:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ansible_control_node
+    volumes:
+      # Mount the ansible project directory into the container
+      - ../ansible-dev-env:/project
+      # Mount ssh keys to be able to connect to hosts
+      # Mount the local .ssh directory, where you should place your keys
+      - ./.ssh:/root/.ssh:ro
+    working_dir: /project
