@@ -23,7 +23,8 @@ pip3 install ansible
 ```
 ansible-dev-env/
 ├── inventories/          # Arquivos de inventário
-│   └── development      # Inventário para ambiente local
+│   ├── development      # Inventário para ambiente local
+│   └── wsl             # Inventário para Windows Subsystem for Linux
 ├── playbooks/           # Playbooks Ansible
 │   └── setup-dev-env.yml # Playbook principal
 ├── roles/               # Roles (componentes reutilizáveis)
@@ -89,12 +90,22 @@ cd ansible-dev-env
 
 2. Execute o playbook:
 ```bash
-# Para executar todo o setup
+# Para executar todo o setup no ambiente local
 ansible-playbook -i inventories/development playbooks/setup-dev-env.yml --ask-become-pass
+
+# Para executar no WSL (Windows Subsystem for Linux)
+ansible-playbook -i inventories/wsl playbooks/setup-dev-env.yml --ask-become-pass
 
 # Para executar apenas roles específicas
 ansible-playbook -i inventories/development playbooks/setup-dev-env.yml --tags "python,nodejs" --ask-become-pass
 ```
+
+### Usando com WSL
+
+Para usar com o WSL, você precisa:
+1. Configurar SSH no WSL (veja `inventories/README.md` para instruções detalhadas)
+2. Editar o arquivo `inventories/wsl` com suas informações de conexão
+3. Executar o playbook usando o inventário WSL
 
 ## Personalizando
 

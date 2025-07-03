@@ -1,0 +1,23 @@
+# WSL (Windows Subsystem for Linux) Inventory
+
+[wsl]
+# Para WSL2, você pode usar o hostname ou IP do WSL
+# Substitua 'wsl-ubuntu' pelo hostname real do seu WSL ou use o IP
+wsl-ubuntu ansible_host=localhost ansible_port=2222 ansible_user=your_wsl_user
+
+# Alternativa usando IP direto do WSL2
+# wsl-ubuntu ansible_host=172.x.x.x ansible_user=your_wsl_user
+
+[wsl:vars]
+# Conexão SSH é preferível para WSL2
+ansible_connection=ssh
+ansible_python_interpreter=/usr/bin/python3
+
+# Se você configurou chave SSH, descomente a linha abaixo
+# ansible_ssh_private_key_file=~/.ssh/id_rsa
+
+# Para evitar verificação de host SSH (desenvolvimento apenas)
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+[development:children]
+wsl
