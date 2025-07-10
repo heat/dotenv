@@ -40,7 +40,7 @@
           - containerd.io
           - docker-compose-plugin
         state: present
-  when: docker_info_result.failed and ansible_os_family == "Debian"
+  when: docker_info_result.failed and package_manager == "apt"
 
 # - name: Add user to docker group
 #   user:

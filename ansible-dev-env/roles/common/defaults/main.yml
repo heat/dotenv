@@ -1,4 +1,3 @@
 ---
-# Role zsh defaults
-# Package manager configuration
+# Default package manager configuration
 package_manager: "{{ 'pacman' if ansible_os_family == 'Archlinux' else 'apt' }}"

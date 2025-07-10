@@ -1,12 +1,12 @@
 ---
 # Include OS-specific tasks
-- name: Include Debian/Ubuntu tasks
+- name: Include APT-based tasks
   include_tasks: debian.yml
-  when: ansible_os_family == "Debian"
+  when: package_manager == "apt"
 
-- name: Include Arch Linux tasks
+- name: Include Pacman-based tasks
   include_tasks: archlinux.yml
-  when: ansible_os_family == "Archlinux"
+  when: package_manager == "pacman"
 
 - name: Gather package facts
   package_facts:

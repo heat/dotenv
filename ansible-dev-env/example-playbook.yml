@@ -1,0 +1,34 @@
+---
+# Exemplo de playbook usando a nova variável package_manager
+- name: Setup Development Environment
+  hosts: localhost
+  connection: local
+  gather_facts: yes
+  
+  # Exemplo de como sobrescrever o package_manager
+  # vars:
+  #   package_manager: "pacman"  # Força usar pacman independente do OS
+  
+  roles:
+    - common
+    - zsh
+    - python
+    - nodejs
+    - docker
+
+# Exemplo de playbook com diferentes gerenciadores por grupo
+- name: Setup for Ubuntu servers
+  hosts: ubuntu_servers
+  vars:
+    package_manager: "apt"
+  roles:
+    - common
+    - python
+
+- name: Setup for Arch servers
+  hosts: arch_servers
+  vars:
+    package_manager: "pacman"
+  roles:
+    - common
+    - python
